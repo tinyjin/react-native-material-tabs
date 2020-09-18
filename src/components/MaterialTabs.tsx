@@ -16,6 +16,12 @@ import { ContentType } from './Tab/Tab';
 import { Bar, TabTrack } from '../lib/styles';
 import constants from '../lib/constants';
 
+enum Size {
+  Big = 'big',
+  Normal = 'normal',
+  Small = 'small',
+}
+
 interface Props extends Pick<ScrollViewProps, 'keyboardShouldPersistTaps'> {
   allowFontScaling: boolean;
   selectedIndex: number;
@@ -29,6 +35,8 @@ interface Props extends Pick<ScrollViewProps, 'keyboardShouldPersistTaps'> {
   activeTextStyle: StyleProp<TextStyle>;
   items: ContentType[];
   uppercase: boolean;
+  indicatorWidthType: Size;
+  indicatorHeightType: Size;
   onChange(index: number): void;
 }
 
@@ -49,6 +57,8 @@ const MaterialTabs: React.FC<Props> = ({
   inactiveTextColor,
   uppercase,
   indicatorColor,
+  indicatorWidthType,
+  indicatorHeightType,
   barColor,
 }) => {
   const [tabWidth, setTabWidth] = useState(0);
@@ -56,6 +66,8 @@ const MaterialTabs: React.FC<Props> = ({
   const [indicatorPosition] = useState(new Animated.Value(0));
   const scrollView = React.createRef<ScrollView>();
   const bar = React.createRef<View>();
+  const indicatorWidth = tabWidth / { big: 1, normal: 1.5, small: 2}[indicatorWidthType || 'big'];
+  const indicatorHeight = { big: 4, normal: 2, small: 1}[indicatorHeightType || 'normal'];
 
   const getTabWidth = useCallback(
     (width: number = 0) => {
@@ -165,7 +177,9 @@ const MaterialTabs: React.FC<Props> = ({
           <Indicator
             color={indicatorColor}
             value={indicatorPosition}
-            tabWidth={!scrollable ? tabWidth : barWidth * 0.4}
+            marginHorizontal={!scrollable ? (tabWidth - (indicatorWidth)) / 4 : 0}
+            tabWidth={!scrollable ? indicatorWidth : barWidth * 0.2}
+            tabHeight={indicatorHeight}
           />
         </ScrollView>
       </Bar>
